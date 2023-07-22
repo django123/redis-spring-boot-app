@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/api/userEntitys", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
-public class UserEntityResource {
+public class UserEntityResource implements UserApi{
 
     private final UserEntityService userEntityService;
 
@@ -35,37 +35,34 @@ public class UserEntityResource {
         this.userEntityService = userEntityService;
     }
 
-    @GetMapping
+    @Override
     public ResponseEntity<List<UserEntityDTO>> getAllUserEntitys() {
         return ResponseEntity.ok(userEntityService.findAll());
     }
 
-    @Cacheable(value="users", key="#id", unless = "#result.followers < 12000")
-    @GetMapping("/{id}")
+    @Override
     public ResponseEntity<UserEntityDTO> getUserEntity(@PathVariable(name = "id") final Long id) {
         log.info("getting with ID {}.", id);
         return ResponseEntity.ok(userEntityService.get(id));
     }
 
-    @PostMapping
-    @ApiResponse(responseCode = "201")
+    @Override
     public ResponseEntity<Long> createUserEntity(
             @RequestBody @Valid final UserEntityDTO userEntityDTO) {
         final Long createdId = userEntityService.create(userEntityDTO);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
-    @CachePut(value = "users", key ="#userEntityDTO.id")
-    @PutMapping("/{id}")
+
+    @Override
     public ResponseEntity<Long> updateUserEntity(@PathVariable(name = "id") final Long id,
             @RequestBody @Valid final UserEntityDTO userEntityDTO) {
         userEntityService.update(id, userEntityDTO);
         return ResponseEntity.ok(id);
     }
 
-    @CacheEvict(value = "users", allEntries = true)
-    @DeleteMapping("/{id}")
-    @ApiResponse(responseCode = "204")
+
+    @Override
     public ResponseEntity<Void> deleteUserEntity(@PathVariable(name = "id") final Long id) {
         userEntityService.delete(id);
         return ResponseEntity.noContent().build();
