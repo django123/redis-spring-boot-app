@@ -1,10 +1,13 @@
 package com.django.redis_spring_boot_app.service;
 
 import com.django.redis_spring_boot_app.domain.UserEntity;
+import com.django.redis_spring_boot_app.mappers.UserMapper;
 import com.django.redis_spring_boot_app.model.UserEntityDTO;
 import com.django.redis_spring_boot_app.repos.UserEntityRepository;
 import com.django.redis_spring_boot_app.util.NotFoundException;
 import java.util.List;
+
+import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class UserEntityService {
 
     private final UserEntityRepository userEntityRepository;
+
 
     public UserEntityService(final UserEntityRepository userEntityRepository) {
         this.userEntityRepository = userEntityRepository;
@@ -47,7 +51,6 @@ public class UserEntityService {
     public void delete(final Long id) {
         userEntityRepository.deleteById(id);
     }
-
     private UserEntityDTO mapToDTO(final UserEntity userEntity, final UserEntityDTO userEntityDTO) {
         userEntityDTO.setId(userEntity.getId());
         userEntityDTO.setName(userEntity.getName());
